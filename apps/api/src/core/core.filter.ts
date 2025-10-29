@@ -1,5 +1,5 @@
 import { ValidationError } from 'class-validator';
-import { AnimeErrorCategory, AnimeErrorType } from '../anime/anime.utility';
+import { AnimeErrorCategory, AnimeErrorType } from '@anime';
 import {
 	TValidationDetails,
 	IValidationResponse,
@@ -7,7 +7,7 @@ import {
 	TModules,
 	TFilterErrorKeys,
 	getFunError,
-} from './core.utility';
+} from '@core';
 import {
 	ExceptionFilter,
 	Catch,

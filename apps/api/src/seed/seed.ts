@@ -1,8 +1,7 @@
 import { seeder } from 'nestjs-seeder';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AnimeSeeder } from './seed.service';
-import { animeModels } from './data/anime.data';
+import { AnimeSeeder, animeModels } from '@seed';
 
 seeder({
 	imports: [

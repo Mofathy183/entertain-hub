@@ -5,18 +5,18 @@ import {
 	HttpStatus,
 	BadRequestException,
 } from '@nestjs/common';
+import { Response } from 'express';
 import {
 	getAnimeErrorMessage,
 	AnimeErrorCategory,
 	AnimeErrorType,
-} from './anime.utility';
+} from '@anime';
 import {
 	BaseValidateResponse,
 	BaseThrowError,
 	TModules,
 	ValidationExceptionResponse,
-} from '../core/index';
-import { Response } from 'express';
+} from '@core';
 
 export class AnimeErrorResponse extends BaseValidateResponse {
 	protected getExampleFor(field: string): string {

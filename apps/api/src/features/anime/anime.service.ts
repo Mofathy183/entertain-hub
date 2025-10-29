@@ -1,17 +1,33 @@
 import { Injectable } from '@nestjs/common';
+import { Model, DeleteResult } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 import {
 	CreateAnimeDto,
 	CreateQuoteDto,
 	UpdateQuoteDto,
 	UpdateAnimeDto,
-} from './anime.dto';
-import { AnimeThrowError } from './anime.filter';
-import { Anime, Quote, AnimeDocument, QuoteDocument } from './anime.schema';
-import { Model, DeleteResult } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
+	MoodEnum,
+	FilterQuote,
+	FilterAnime,
+	FisherYatesShuffle,
+	BinaryTree,
+	TreeNode,
+	AnimeThrowError,
+	Anime,
+	Quote,
+	AnimeDocument,
+	QuoteDocument,
+	OrderBy,
+	SortOrderEnum,
+	AnimeInsertionSort,
+	QuoteInsertionSort,
+} from '@anime';
 
 @Injectable()
 export class AnimeService {
+	private animeShuffle?: FisherYatesShuffle<AnimeDocument>;
+	private quoteShuffle?: FisherYatesShuffle<QuoteDocument>;
+
 	constructor(
 		@InjectModel(Anime.name) private animeModel: Model<AnimeDocument>,
 		@InjectModel(Quote.name) private quoteModel: Model<QuoteDocument>,
@@ -49,6 +65,46 @@ export class AnimeService {
 		}
 	}
 
+	async getRandomAnime(quotes: number): Promise<AnimeDocument> {
+		try {
+			if (this.animeShuffle) {
+				const randomAnime = this.animeShuffle.pickOne();
+
+				//* limit the quotes per anime
+				randomAnime.quotes = randomAnime.quotes
+					? randomAnime.quotes.slice(0, quotes)
+					: [];
+				return randomAnime;
+			}
+
+			//* first get all animes from the db
+			const animeList = await this.animeModel
+				.find()
+				.populate({ path: 'quotes', options: { limit: quotes } });
+
+			if (!animeList || animeList.length === 0) {
+				new AnimeThrowError('empty', 'anime', 'notFound').throwError();
+				return undefined as never;
+			}
+
+			//* shuffle the anime list
+			//* return the next random anime
+			this.animeShuffle = new FisherYatesShuffle<AnimeDocument>(
+				animeList,
+			);
+
+			return this.animeShuffle.pickOne();
+		} catch (error: unknown) {
+			new AnimeThrowError(
+				'findAll',
+				'anime',
+				'InternalServer',
+				error,
+			).throwError();
+			return undefined as never;
+		}
+	}
+
 	async getAnimeById(id: string, quotes: number = 5): Promise<AnimeDocument> {
 		try {
 			//* find the anime by id
@@ -75,6 +131,185 @@ export class AnimeService {
 			new AnimeThrowError(
 				'notFound',
 				'anime',
+				'InternalServer',
+				error,
+			).throwError();
+			return undefined as never;
+		}
+	}
+
+	async animeSearch(
+		title?: string,
+		protagonist?: string,
+		universe?: string,
+	): Promise<AnimeDocument[]> {
+		try {
+			const animeList = await this.animeModel.find();
+
+			const filter: AnimeDocument[] =
+				new FilterAnime(animeList)
+					.byTitle(title)
+					.byProtagonist(protagonist)
+					.byUniverse(universe)
+					.apply() ?? [];
+
+			return filter;
+		} catch (error: unknown) {
+			new AnimeThrowError(
+				'notFound',
+				'anime',
+				'InternalServer',
+				error,
+			).throwError();
+			return [];
+		}
+	}
+
+	async sortingAnime(
+		by: OrderBy,
+		order: SortOrderEnum,
+	): Promise<AnimeDocument[]> {
+		try {
+			//* fetch the data from the DB
+			const animeList = await this.animeModel.find();
+
+			//* use the AnimeInsertionSort to sort based on the "by" that will get from the Query and the Query "order" too
+			const sortedList = new AnimeInsertionSort(animeList).sort(
+				by,
+				order,
+			);
+
+			//? check if the list is not empty
+			if (!sortedList || sortedList.length === 0) {
+				new AnimeThrowError('empty', 'anime', 'notFound');
+				return [];
+			}
+
+			//* return the sorted list
+			return sortedList;
+		} catch (error: unknown) {
+			new AnimeThrowError(
+				'empty',
+				'anime',
+				'InternalServer',
+				error,
+			).throwError();
+			return [];
+		}
+	}
+
+	async getTop10Anime(): Promise<TreeNode> {
+		try {
+			const animeList = await this.animeModel.find();
+
+			//* sort in memory using insertion sort
+			//* Sort it DESC will make it from the bigger => smaller
+			const sorted = new AnimeInsertionSort(animeList).sort(
+				'rating',
+				SortOrderEnum.DESC,
+			);
+
+			//? check if the list is not empty
+			if (!sorted || sorted.length === 0) {
+				new AnimeThrowError('empty', 'anime', 'notFound');
+				return undefined as never;
+			}
+
+			//* take top 10
+			const top10 = sorted.slice(0, 10);
+
+			//* build your binary tree root and return
+			const top10AnimeTree = new BinaryTree(top10).getTreeRoot();
+
+			return top10AnimeTree;
+		} catch (error: unknown) {
+			new AnimeThrowError(
+				'notFound',
+				'anime',
+				'InternalServer',
+				error,
+			).throwError();
+			return undefined as never;
+		}
+	}
+
+	async quoteSearch(
+		word?: string,
+		character?: string,
+		mood?: MoodEnum,
+	): Promise<QuoteDocument[]> {
+		try {
+			const quotes = await this.quoteModel.find();
+
+			const filter: QuoteDocument[] =
+				new FilterQuote(quotes)
+					.byCharacter(character)
+					.byMood(mood)
+					.byWord(word)
+					.apply() ?? [];
+
+			return filter;
+		} catch (error: unknown) {
+			new AnimeThrowError(
+				'notFound',
+				'quote',
+				'InternalServer',
+				error,
+			).throwError();
+			return [];
+		}
+	}
+
+	async sortingQuote(order: SortOrderEnum): Promise<QuoteDocument[]> {
+		try {
+			//* fetch all the quotes from the DB
+			const quotes = await this.quoteModel.find();
+
+			const sortedList = new QuoteInsertionSort(quotes).sort(order);
+
+			//? check if the list is not empty
+			if (!sortedList || sortedList.length === 0) {
+				new AnimeThrowError('empty', 'anime', 'notFound');
+				return [];
+			}
+
+			return sortedList;
+		} catch (error: unknown) {
+			new AnimeThrowError(
+				'empty',
+				'anime',
+				'InternalServer',
+				error,
+			).throwError();
+			return [];
+		}
+	}
+
+	async getRandomQuote(): Promise<QuoteDocument> {
+		try {
+			if (this.quoteShuffle) {
+				return this.quoteShuffle.pickOne();
+			}
+
+			//* first get all quotes from the db
+			const quoteList = await this.quoteModel.find();
+
+			if (!quoteList || quoteList.length === 0) {
+				new AnimeThrowError('empty', 'quote', 'notFound').throwError();
+				return undefined as never;
+			}
+
+			//* shuffle the quote list
+			//* return the next random quote
+			this.quoteShuffle = new FisherYatesShuffle<QuoteDocument>(
+				quoteList,
+			);
+
+			return this.quoteShuffle.pickOne();
+		} catch (error: unknown) {
+			new AnimeThrowError(
+				'findAll',
+				'quote',
 				'InternalServer',
 				error,
 			).throwError();
@@ -116,6 +351,7 @@ export class AnimeService {
 				title: createAnimeDto.title,
 				protagonist: createAnimeDto.protagonist,
 				universe: createAnimeDto.universe,
+				rating: createAnimeDto.rating,
 			});
 
 			if (!newAnime) {
@@ -147,9 +383,6 @@ export class AnimeService {
 				character: createQuoteDto.character,
 				quote: createQuoteDto.quote,
 				mood: createQuoteDto.mood,
-				powerLevel: createQuoteDto.powerLevel
-					? createQuoteDto.powerLevel
-					: 0,
 			});
 
 			//* add the new quote to the anime quotes
@@ -190,7 +423,6 @@ export class AnimeService {
 					character: updateQuoteDto?.character,
 					quote: updateQuoteDto?.quote,
 					mood: updateQuoteDto?.mood,
-					powerLevel: updateQuoteDto?.powerLevel,
 				},
 				{ new: true },
 			);
@@ -243,6 +475,7 @@ export class AnimeService {
 						title: updateAnimeDto?.title,
 						protagonist: updateAnimeDto?.protagonist,
 						universe: updateAnimeDto?.universe,
+						rating: updateAnimeDto.rating,
 					},
 					{ new: true },
 				)

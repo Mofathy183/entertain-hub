@@ -1,7 +1,12 @@
-import type { IErrorMessage, ModuleCategory } from 'core/index';
-import { IAnime, IDelete, IQuote } from './anime.dto';
-import { AnimeDocument, QuoteDocument } from './anime.schema';
 import { DeleteResult } from 'mongoose';
+import type { IErrorMessage, ModuleCategory } from '@core';
+import type {
+	IAnime,
+	IDelete,
+	IQuote,
+	AnimeDocument,
+	QuoteDocument,
+} from '@anime';
 
 export class AnimeMapper {
 	static toQuoteDTO(quote: QuoteDocument): IQuote {
@@ -12,7 +17,6 @@ export class AnimeMapper {
 			character: quote.character,
 			quote: quote.quote,
 			mood: quote.mood,
-			powerLevel: quote.powerLevel,
 		};
 	}
 
@@ -21,6 +25,7 @@ export class AnimeMapper {
 			_id: anime._id,
 			title: anime.title,
 			protagonist: anime.protagonist,
+			rating: anime.rating,
 			universe: anime.universe || undefined,
 			quotes: Array.isArray(anime.quotes)
 				? (anime.quotes as QuoteDocument[]).map((q) =>

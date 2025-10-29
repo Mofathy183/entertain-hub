@@ -64,6 +64,18 @@ export class CreateAnimeDto {
 	})
 	protagonist!: string;
 
+	@IsInt({
+		message:
+			'Rating must be a number — not your feelings about the last episode.',
+	})
+	@Min(0, {
+		message: 'Below 0? What is this, a cursed filler arc?',
+	})
+	@Max(10, {
+		message: 'Over 10? Calm down, this isn’t Goku’s power level.',
+	})
+	rating!: number;
+
 	@IsOptional()
 	@IsString({
 		message:
@@ -119,14 +131,14 @@ export class CreateQuoteDto {
 	})
 	mood!: MoodEnum;
 
-	@IsOptional()
-	@IsInt({
-		message:
-			'Power level must be an integer. Stop trying decimal Super Saiyan forms.',
-	})
-	@Min(0, { message: 'Power level can’t be negative. Even Yamcha has 1.' })
-	@Max(9000, { message: 'Power level too high! Vegeta’s scouter exploded.' })
-	powerLevel?: number;
+	// @IsOptional()
+	// @IsInt({
+	// 	message:
+	// 		'Power level must be an integer. Stop trying decimal Super Saiyan forms.',
+	// })
+	// @Min(0, { message: 'Power level can’t be negative. Even Yamcha has 1.' })
+	// @Max(9000, { message: 'Power level too high! Vegeta’s scouter exploded.' })
+	// powerLevel?: number;
 }
 
 //* the DTO for updating anime Models
@@ -157,13 +169,13 @@ export type IQuote = {
 	character: string;
 	quote: string;
 	mood: MoodEnum;
-	powerLevel?: number;
 };
 
 export interface IAnime {
 	_id?: string;
 	title: string;
 	protagonist: string;
+	rating: number;
 	universe?: string;
 	quotes?: IQuote[];
 }
@@ -172,3 +184,24 @@ export interface IAnime {
 export type IUpdateQuote = Partial<IQuote>;
 
 export type IUpdateAnime = Partial<IAnime>;
+
+/**
+ * Specifies the direction in which results should be sorted.
+ * Used in query parameters as `order`.
+ *
+ * - ASC: Sorts in ascending order (e.g., A → Z, 0 → 9).
+ * - DESC: Sorts in descending order (e.g., Z → A, 9 → 0).
+ */
+export enum SortOrderEnum {
+	ASC = 'ASC',
+	DESC = 'DESC',
+}
+
+/**
+ * Defines the field by which results should be sorted.
+ * Used in query parameters as `by`.
+ *
+ * - "title", "protagonist", "rating": applicable to anime sorting.
+ * - "character": applicable to quote sorting. but it only sorted with it so we don't need to add it here
+ */
+export type OrderBy = 'title' | 'protagonist' | 'rating';

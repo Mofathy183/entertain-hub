@@ -5,7 +5,7 @@ import {
 	BadRequestException,
 } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { AppExceptionsFilter, FallbackRouteMiddleware } from './core/index';
+import { AppExceptionsFilter, FallbackRouteMiddleware } from '@core';
 import { NextFunction, Request, Response } from 'express';
 
 async function bootstrap() {

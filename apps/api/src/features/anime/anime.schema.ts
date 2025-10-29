@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { createId } from '@paralleldrive/cuid2';
-import { MoodEnum } from './anime.dto';
-import { toTitleCase } from './anime.utility';
+import { MoodEnum, toTitleCase } from '@anime';
 
 @Schema({ timestamps: true })
 export class Quote {
@@ -51,13 +50,13 @@ export class Quote {
 	})
 	mood!: MoodEnum;
 
-	@Prop({
-		type: Number,
-		min: [0, 'Power level can’t be negative. Even Yamcha has 1.'],
-		max: [9000, 'Power level too high! Vegeta’s scouter exploded.'],
-		default: () => Math.floor(Math.random() * 500) + 50,
-	})
-	powerLevel?: number;
+	// @Prop({
+	// 	type: Number,
+	// 	min: [0, 'Power level can’t be negative. Even Yamcha has 1.'],
+	// 	max: [9000, 'Power level too high! Vegeta’s scouter exploded.'],
+	// 	default: () => Math.floor(Math.random() * 500) + 50,
+	// })
+	// powerLevel?: number;
 }
 
 export type QuoteDocument = HydratedDocument<Quote>;
@@ -100,6 +99,20 @@ export class Anime {
 		],
 	})
 	protagonist!: string;
+
+	@Prop({
+		type: Number,
+		required: [
+			true,
+			'Every anime deserves a rating. Even the ones that traumatized you halfway through.',
+		],
+		min: [0, 'Below 0? What is this, a filler arc of disappointment?'],
+		max: [
+			10,
+			'Over 10? Calm down, this isn’t "Your Name" on a rainy night.',
+		],
+	})
+	rating!: number;
 
 	@Prop({
 		type: String,

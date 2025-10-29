@@ -1,10 +1,15 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { APP_FILTER } from '@nestjs/core';
-import { Anime, AnimeSchema, Quote, QuoteSchema } from './anime.schema';
-import { AnimeController } from './anime.controller';
-import { AnimeService } from './anime.service';
-import { AnimeValidationFilter } from './anime.filter';
+import {
+	Anime,
+	AnimeSchema,
+	Quote,
+	QuoteSchema,
+	AnimeController,
+	AnimeService,
+	AnimeValidationFilter,
+} from '@anime';
 
 @Module({
 	//* will add the module imports here

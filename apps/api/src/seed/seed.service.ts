@@ -2,13 +2,8 @@ import { Model } from 'mongoose';
 import { Seeder } from 'nestjs-seeder';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-	Anime,
-	AnimeDocument,
-	Quote,
-	QuoteDocument,
-} from '../anime/anime.schema';
-import { animeDB } from './data/anime.data';
+import { Anime, AnimeDocument, Quote, QuoteDocument } from '@anime';
+import { animeDB } from '@seed';
 
 @Injectable()
 export class AnimeSeeder implements Seeder {
@@ -28,6 +23,7 @@ export class AnimeSeeder implements Seeder {
 				title: anime.title,
 				protagonist: anime.protagonist,
 				universe: anime.universe,
+				rating: anime.rating,
 			});
 
 			// 2. Create related quotes with animeId
