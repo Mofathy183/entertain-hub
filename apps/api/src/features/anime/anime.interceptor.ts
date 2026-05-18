@@ -7,7 +7,8 @@ import {
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import type { Request, Response } from 'express';
-import { HashMapKey, LRUCache, type IAnime, type IQuote } from '@anime';
+import type { IAnime, IQuote } from '@anime';
+import { HashMapKey, LRUCache } from '@core';
 
 @Injectable()
 export class AnimeInterceptor implements NestInterceptor {

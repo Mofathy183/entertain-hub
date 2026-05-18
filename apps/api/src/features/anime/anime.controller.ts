@@ -26,11 +26,10 @@ import {
 	UpdateQuoteDto,
 	AnimeService,
 	AnimeMapper,
-	TreeNode,
 	MoodEnum,
 	SortOrderEnum,
 } from '@anime';
-import { CuidValidationPipe } from '@core';
+import { CuidValidationPipe, TreeNode } from '@core';
 
 //* the route endpoint for this controller
 @UseInterceptors(AnimeInterceptor)

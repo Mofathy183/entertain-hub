@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Model, DeleteResult } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { FisherYatesShuffle, BinaryTree, TreeNode } from '@core';
 import {
 	CreateAnimeDto,
 	CreateQuoteDto,
@@ -9,9 +10,6 @@ import {
 	MoodEnum,
 	FilterQuote,
 	FilterAnime,
-	FisherYatesShuffle,
-	BinaryTree,
-	TreeNode,
 	AnimeThrowError,
 	Anime,
 	Quote,
@@ -37,11 +35,11 @@ export class AnimeService {
 
 	async getAllAnime(limit: number, quotes: number): Promise<AnimeDocument[]> {
 		try {
-			//* first get the animes from the db with the limit
+			//* first get the anime list from the db with the limit
 			const animeList = await this.animeModel
 				.find()
 				.limit(limit)
-				//* secondly map through the animes and limit the quotes per anime
+				//* secondly map through the anime list and limit the quotes per anime
 				.populate({
 					path: 'quotes',
 					options: { limit: quotes },
@@ -77,7 +75,7 @@ export class AnimeService {
 				return randomAnime;
 			}
 
-			//* first get all animes from the db
+			//* first get all anime list from the db
 			const animeList = await this.animeModel
 				.find()
 				.populate({ path: 'quotes', options: { limit: quotes } });
@@ -146,14 +144,13 @@ export class AnimeService {
 		try {
 			const animeList = await this.animeModel.find();
 
-			const filter: AnimeDocument[] =
+			return (
 				new FilterAnime(animeList)
 					.byTitle(title)
 					.byProtagonist(protagonist)
 					.byUniverse(universe)
-					.apply() ?? [];
-
-			return filter;
+					.apply() ?? []
+			);
 		} catch (error: unknown) {
 			new AnimeThrowError(
 				'notFound',
@@ -219,9 +216,7 @@ export class AnimeService {
 			const top10 = sorted.slice(0, 10);
 
 			//* build your binary tree root and return
-			const top10AnimeTree = new BinaryTree(top10).getTreeRoot();
-
-			return top10AnimeTree;
+			return new BinaryTree(top10).getTreeRoot();
 		} catch (error: unknown) {
 			new AnimeThrowError(
 				'notFound',
@@ -241,14 +236,13 @@ export class AnimeService {
 		try {
 			const quotes = await this.quoteModel.find();
 
-			const filter: QuoteDocument[] =
+			return (
 				new FilterQuote(quotes)
 					.byCharacter(character)
 					.byMood(mood)
 					.byWord(word)
-					.apply() ?? [];
-
-			return filter;
+					.apply() ?? []
+			);
 		} catch (error: unknown) {
 			new AnimeThrowError(
 				'notFound',
