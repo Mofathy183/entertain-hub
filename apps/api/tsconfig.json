@@ -25,7 +25,8 @@
 		"paths": {
 			"@core": ["./core"],
 			"@seed": ["./seed"],
-			"@anime": ["./features/anime/"]
+			"@anime": ["./features/anime/"],
+			"@shared": ["./shared"]
 		}
 	},
 	"include": ["src"]

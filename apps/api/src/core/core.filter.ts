@@ -7,7 +7,7 @@ import {
 	TModules,
 	TFilterErrorKeys,
 	getFunError,
-} from '@core';
+} from '@shared';
 import {
 	ExceptionFilter,
 	Catch,

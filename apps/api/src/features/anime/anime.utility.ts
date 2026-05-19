@@ -1,5 +1,5 @@
 import { DeleteResult } from 'mongoose';
-import type { IErrorMessage, ModuleCategory } from '@core';
+import type { IErrorMessage, ModuleCategory } from '@shared';
 import type {
 	IAnime,
 	IDelete,

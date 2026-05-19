@@ -29,7 +29,8 @@ import {
 	MoodEnum,
 	SortOrderEnum,
 } from '@anime';
-import { CuidValidationPipe, TreeNode } from '@core';
+import { CuidValidationPipe } from '@core';
+import { TreeNode } from '@shared';
 
 //* the route endpoint for this controller
 @UseInterceptors(AnimeInterceptor)
@@ -58,8 +59,8 @@ export class AnimeController {
 		@Query('limit', new DefaultValuePipe(5), ParseIntPipe) limit: number,
 		@Query('quotes', new DefaultValuePipe(5), ParseIntPipe) quotes: number,
 	): Promise<IAnime[]> {
-		const animes = this.animeService.getAllAnime(limit, quotes);
-		return (await animes).map((anime) => AnimeMapper.toAnimeDTO(anime));
+		const animeList = this.animeService.getAllAnime(limit, quotes);
+		return (await animeList).map((anime) => AnimeMapper.toAnimeDTO(anime));
 	}
 
 	//* GET "/anime/search" get anime by QUERY title, protagonist, universe. these are the query we will search for in the anime
@@ -72,12 +73,12 @@ export class AnimeController {
 		//? if no query params provided, return empty array
 		if (!title && !protagonist && !universe) return [];
 
-		const animes = await this.animeService.animeSearch(
+		const animeList = await this.animeService.animeSearch(
 			title,
 			protagonist,
 			universe,
 		);
-		return animes.map((anime) => AnimeMapper.toAnimeDTO(anime));
+		return animeList.map((anime) => AnimeMapper.toAnimeDTO(anime));
 	}
 
 	//* GET "/anime/random" Get a random anime with its quotes, quotes per anime default 5
@@ -89,7 +90,7 @@ export class AnimeController {
 		return AnimeMapper.toAnimeDTO(anime);
 	}
 
-	//* Get "anime/sort" It sort the anime by QUERY title, protagonist, rating. and it use insertion sort to make the sort
+	//* Get "anime/sort" It sorts the anime by QUERY title, protagonist, rating. and it uses insertion sort to make the sort
 	@Get('sort')
 	async findSortedAnime(
 		@Query('by') by: OrderBy,
@@ -107,8 +108,7 @@ export class AnimeController {
 	//* GET "/anime/top-10" get top ten anime by rating with its quotes, quotes per anime default 5
 	@Get('top-10')
 	async fineTopTenAnime(): Promise<TreeNode> {
-		const animes = await this.animeService.getTop10Anime();
-		return animes;
+		return await this.animeService.getTop10Anime();
 	}
 
 	//* GET "/anime/:id" get anime by id will its quotes. quotes per anime default 5

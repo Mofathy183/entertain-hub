@@ -5,7 +5,7 @@ import {
 	type AnimeDocument,
 	type QuoteDocument,
 } from '@anime';
-import { SortBuilder } from '@core';
+import { SortBuilder } from '@shared';
 
 /**
  * A specialized insertion sort implementation for Anime documents.

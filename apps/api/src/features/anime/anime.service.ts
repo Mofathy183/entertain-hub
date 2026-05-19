@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Model, DeleteResult } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { FisherYatesShuffle, BinaryTree, TreeNode } from '@core';
+import { FisherYatesShuffle, BinaryTree, TreeNode } from '@shared';
 import {
 	CreateAnimeDto,
 	CreateQuoteDto,

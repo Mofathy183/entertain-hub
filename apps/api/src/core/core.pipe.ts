@@ -1,6 +1,6 @@
 import { Injectable, PipeTransform, BadRequestException } from '@nestjs/common';
 import { isCuid } from '@paralleldrive/cuid2';
-import type { TModules } from '@core';
+import type { TModules } from '@shared';
 
 export type TCuidError = {
 	wisdom: string;

@@ -1,5 +1,5 @@
 {
-	"name": "entertainhub",
+	"name": "entertain-hub",
 	"version": "1.0.0",
 	"private": true,
 	"description": "🎬 EntertainHub — a fun monorepo mixing NestJS, Angular, and classic DSA magic!",

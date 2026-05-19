@@ -11,12 +11,8 @@ import {
 	AnimeErrorCategory,
 	AnimeErrorType,
 } from '@anime';
-import {
-	BaseValidateResponse,
-	BaseThrowError,
-	TModules,
-	ValidationExceptionResponse,
-} from '@core';
+import { BaseValidateResponse, BaseThrowError } from '@core';
+import { TModules, ValidationExceptionResponse } from '@shared';
 
 export class AnimeErrorResponse extends BaseValidateResponse {
 	protected getExampleFor(field: string): string {

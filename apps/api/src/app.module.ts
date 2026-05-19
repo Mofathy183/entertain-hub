@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AnimeModule } from '@anime';
+import { SharedModule } from '@shared';
 
 @Module({
 	imports: [
@@ -19,6 +20,7 @@ import { AnimeModule } from '@anime';
 			}),
 		}),
 		AnimeModule,
+		SharedModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

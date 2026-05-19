@@ -5,7 +5,7 @@ import {
 	getFunError,
 	ROUTE_NOT_FOUND_ERROR,
 	ROUTE_NOT_FOUND_MESSAGES,
-} from '@core';
+} from '@shared';
 
 const getNotFoundRouteMessage = (module?: TModules) => {
 	const routeMsgs = module ? ROUTE_NOT_FOUND_MESSAGES[module] : undefined;
